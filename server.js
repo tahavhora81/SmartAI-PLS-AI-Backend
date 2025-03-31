@@ -190,3 +190,104 @@ function encodeImage(imagePath) {
 function isRemoteFile(filePath)  {
     return filePath.startsWith("http://") || filePath.startsWith("https://");
 }
+
+let rt_test ={
+    "purchase_order_number": "QT-2503-06",
+    "order_date": "04-03-2025",
+    "buyer_name": "Ms Hoe Pei Lin",
+    "billing_address": "Blk 87 Hougang ave 2 #04-30, The Florence Residences",
+    "shipping_address": "Blk 87 Hougang ave 2 #04-30, The Florence Residences",
+    "supplier_name": "Lightning Air-Conditioning Services",
+    "supplier_address": "31 Woodlands Close, Horizon Woodlands #03-27 Singapore 737855",
+    "subtotal": "150.00",
+    "tax_amount": "0.00",
+    "total_amount": "150.00",
+    "currency": "SGD",
+    "delivery_date": "",
+    "items": [
+      {
+        "item_name": "To Chemical wash for 1no of outdoor condenser Cu model: MXY-2G20VAZ-R2/28P13279",
+        "quantity": "1",
+        "unit_price": "150.00",
+        "total_price": "150.00"
+      }
+    ]
+};
+
+let inv_test = {
+    "invoice_number": "INV-0325-40",
+    "invoice_date": "26-03-2025",
+    "customer_name": "Ms Hoe Pei Lin",
+    "customer_address": "Blk 87 Hougang ave 2 #04-30, The Florence Residences",
+    "supplier_name": "Lightning Air-Conditioning Services",
+    "supplier_address": "31 Woodlands Close, Horizon Woodlands #03-27 Singapore 737855",
+    "subtotal": "150.00",
+    "total_amount": "150.00",
+    "currency": "SGD",
+    "payment_status": "Unpaid",
+    "items": [
+      {
+        "item_name": "To Chemical wash for 1no of outdoor condenser Cu model: MXY-2G20VAZ-R2/28P13279",
+        "quantity": "1",
+        "unit_price": "150.00",
+        "total_price": "150.00"
+      }
+    ]
+  };
+
+
+function reconciliation(rt, inv){
+    
+    //rt is reconciliation table -> initialized with PO object
+    //inv is invoice object
+
+    if(rt.items.length < inv.items.length){
+        console.log("Error: Quantity Mismatch");
+    }
+
+    if(rt.total < inv.total){
+        console.log("Error: Total Mismatch");
+    }
+
+    
+    for(let i=0; i<inv.items.length; i++){
+        let check = false;
+        let found =0;
+        for(let j=0; j<rt.items.length; j++){
+            if(inv.items[i].item_name == rt.items[j].item_name){
+                check = true;
+                found = j;
+                break;
+            }
+        }
+        if(!check){
+            console.log("Error: "+ inv.items[i].item_name + " not in PO but provided in invoice/bill.") 
+        }
+        else{
+            if(rt.items[found].quantity < inv.items[i].qty){
+                console.log("Error: " + inv.itemes[i].item_name + "Quantity mismatch.");
+            }
+            else if(rt.items[found].unit_price < inv.items[i].unit_price){
+                console.log("Error: " + inv.items[i].name + " Unit price Mismatch");
+            }
+            else{
+                //all details correct 
+                rt.items[found].quantity = rt.items[found].quantity - inv.items[i].quantity;
+                rt.items[found].total = rt.items[found].total - inv.items[i].total;
+                rt.subtotal = rt.subtotal - inv.items[i].total_price;
+                //Total not affected 
+            }
+
+        }
+    }
+
+    if(inv.invoice_date > rt.due_date){
+        console.log("Discrepancy: Invoice date has  overdue due date!")
+    }
+
+    console.log(rt);
+
+}
+
+reconciliation(rt_test, inv_test);
+
