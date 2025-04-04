@@ -126,6 +126,7 @@ app.post('/extractFromInvoice', async (req,res)=>{
         {
         "invoice_number": "INV-98765",  (Also referred to as: Invoice No., Bill Number, Document Number)
         "invoice_date": "DD-MM-YYYY", ( Also referred to as: Invoice Date, Billing Date, Document Date)
+        "purchase_order_number" : "PO-12345" (Also referred to as: PO Number, Order Number, Reference Number, Transaction ID)
         "due_date": "DD-MM-YYYY",  (Also referred to as: Payment Due Date, Last Payment Date)
         "customer_name": "XYZ Ltd",  (Also referred to as: Bill To, Client Name, Purchaser)
         "customer_address": "789 Billing Street",  (Also referred to as: Bill To Address, Customer Location)
@@ -281,9 +282,10 @@ function reconciliation(rt, inv){
         }
     }
 
+    /*
     if(inv.invoice_date > rt.due_date){
         console.log("Discrepancy: Invoice date has  overdue due date!")
-    }
+    }*/
 
     console.log(rt);
 
